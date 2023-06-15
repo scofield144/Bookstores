@@ -41,20 +41,61 @@ BST* bst = criarBST();
     inserirLivroHashTable(hashTable, buscarLivro(bst, livro[1].titulo));
     inserirLivroHashTable(hashTable, buscarLivro(bst, livro[2].titulo));
 
-    menuStart(bst,hashTable,users,livro);
+    Admin adm = admin();
+    int index = 0;
 
+    do{
+
+    int option = 0;
+    printf("TIPO DE UTILIZADOR\n");
+
+    printf("Escolha uma das opções:\n");
+    printf("1 - Administrador\n");
+    printf("2 - Socio\n");
+    printf("3 - Encerrar\n:: ");
+
+    scanf("%d",&option);
+
+    if(option > 0 && option < 4) {
+        switch(option) {
+            case 1 :
+                   if( checkAdm(adm) == 1){
+                        menuStart(bst,hashTable,users,livro);
+                }else{
+                    printf("ERROR NO ADM");
+                }
+                    break;
+            case 2 :
+                    if(checkLogin(users) == 1){
+                            menuUser(users,hashTable);
+                    }else {
+                    printf("ERROR NO SOCIO");
+                    }
+                    break;
+            case 3: index=1;
+                break;
+            default:
+                break;
+        }
+    }else {
+        printf("Opção invalida\n");
+    }
+
+    }while(index != 1);
+    free(bst);
+    free(hashTable);
     return 0;
 }
-
 void menuStart(BST*bst,HashTable*hashTable,Users*users,Livro*book){
 
+    int option = 0;
 
-     int option = 0;
     printf("BEM VINDO A NOSSA LIVRARIA\n");
+
     printf("Escolha uma das opções:\n");
     printf("1 - Configurações\n");
     printf("2 - Gestão\n");
-    printf("3 - Entrar\n:: ");
+    printf("3- Sair\n:: ");
     scanf("%d",&option);
 
     if(option > 0 && option < 4) {
@@ -64,35 +105,36 @@ void menuStart(BST*bst,HashTable*hashTable,Users*users,Livro*book){
                     break;
             case 2 : menuManagement(bst,hashTable);
                     break;
-            case 3 : login(users,hashTable);
-                    break;
+            case 3 :
+                break;
             default: menuStart(bst,hashTable,users,book);
                 break;
         }
     }else {
         menuStart(bst,hashTable,users,book);
-        printf("error");
+        printf("Inserção invalida\n");
     }
-   menuStart(bst,hashTable,users,book);
- free(bst);
-    free(hashTable);
 }
 void menuConfiguration(Users*users) {
     int option;
     printf("CONFIGURAÇÕES DA LIVRARIA\n");
-    printf(" Escolha uma das opções:\n ");
+    printf(" Escolha uma das opções:\n");
     printf("1 - Criar conta\n");
     printf("2 - Alterar senha\n");
-    printf("3 - Carregar ficheiros\n:: ");
+    printf("3 - Carregar ficheiros\n");
+    printf("4 - Sair\n:: ");
+
     scanf("%d",&option);
 
-    if(option > 0 && option < 4) {
+    if(option > 0 && option < 5) {
         switch(option) {
             case 1 : users = criarAcount(users);
                     break;
             case 2 : updatePassword(users);
                     break;
             case 3 : loadFiles();
+                    break;
+            case 4 :
                     break;
             default: menuConfiguration(users);
                 break;
@@ -104,22 +146,24 @@ void menuConfiguration(Users*users) {
 void menuManagement(BST* bst,HashTable* hashTable ) {
     int option;
     printf("GESTÃO DA LIVRARIA\n");
-    printf(" Escolha uma das opções:\n ");
+    printf(" Escolha uma das opções:\n");
     printf("1 - Inserir novo livro\n");
     printf("2 - Actualizar\n");
     printf("3 - Pesquisar\n");
     printf("4 - Eliminar\n");
     printf("5 - Listar todos\n");
     printf("6 - Livros indisponiveis\n");
+
+    printf("7 - Sair\n:: ");
     scanf("%d",&option);
 
 
 
-    if(option > 0 && option < 7) {
+    if(option > 0 && option < 8) {
         switch(option) {
             case 1 : insertionBook(bst,hashTable);
                     break;
-            case 2 : update();
+            case 2 : update(hashTable);
                     break;
             case 3 : searchBook(hashTable);
                     break;
@@ -129,30 +173,30 @@ void menuManagement(BST* bst,HashTable* hashTable ) {
                     break;
             case 6 : showIndisponibleBook(hashTable);
                     break;
+            case 7 :
+                    break;
             default: menuManagement(bst,hashTable);
                 break;
         }
     }else {
         menuManagement(bst,hashTable);
-        printf("error");
+        printf("Inserção invalida\n");
     }
 
 }
 
-void login(Users*user,HashTable* hashTable) {
+void menuUser(Users*user,HashTable* hashTable) {
     int option;
-
- checkLogin(user);
     printf("Entrar\n");
 
-
-    printf(" Escolha uma das opções:\n ");
+    printf(" Escolha uma das opções:\n");
     printf("1 - Pesquisar\n");
     printf("2 - Solicitar livro\n");
     printf("3 - Devolver livro\n");
+    printf("4 - Sair:: \n");
     scanf("%d",&option);
 
-    if(option > 0 && option < 4) {
+    if(option > 0 && option < 5) {
         switch(option) {
             case 1 : searchBook(hashTable);
                     break;
@@ -160,13 +204,13 @@ void login(Users*user,HashTable* hashTable) {
                     break;
             case 3 : returnBook(hashTable);
                     break;
-            default: login(user,hashTable);
+            case 4:
+                    break;
+            default: menuUser(user,hashTable);
                 break;
         }
     }else {
-        login(user,hashTable);
-        printf("error");
+        menuUser(user,hashTable);
+        printf("Inserção invalida\n");
     }
-
-
 }

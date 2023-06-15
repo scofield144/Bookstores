@@ -10,6 +10,7 @@ typedef struct bst BST;
 typedef struct hashTable HashTable;
 
 typedef struct users Users;
+typedef struct adm Admin;
 
 BSTNode* criarNo(Livro livro);
 BST* criarBST();
@@ -33,12 +34,13 @@ Livro* buscarLivroHashTable(HashTable* hashTable, char* titulo);
 
 
 // Show menu of option
-
+Admin  admin();
+int checkAdm(Admin adm);
 void menuStart(BST*bst,HashTable*hash,Users*users,Livro*livro);
 void menuConfiguration(Users*users) ;
 int search(HashTable*hashTable);
 void menuManagement(BST* bst,HashTable* hashTable );
-void login(Users*users,HashTable* hashTable) ;
+void menuUser(Users*users,HashTable* hashTable) ;
 
 // Menu Start function
 void configuration();
@@ -53,7 +55,7 @@ void loadFiles();
 
 // Menu management function
 void insertionBook(BST* bst,HashTable* hashTable);
-void update();
+void update(HashTable*hashTable);
 void searchBook(HashTable* hashTable);
 void delete(BST* bst,HashTable* hashTable);
 void showAll(HashTable* hashTable);
@@ -67,7 +69,7 @@ void requestBook(HashTable*hash);
 void returnBook(HashTable*hash);
 
 
-
+Livro* hardSearchBook(HashTable* hashTable,int i);
 BSTNode* deleteNode(BSTNode* root, char* title);
 BSTNode* findMinimumNode(BSTNode* root) ;
 #endif

@@ -18,6 +18,10 @@ struct users {
     Users* next;
   //  char name[20];
 };
+struct adm {
+    int code;
+    char password[9];
+};
 
 struct bstNode {
     Livro livro;
@@ -125,11 +129,46 @@ void inserirLivroHashTable(HashTable* hashTable, Livro* livro) {
 
 Livro* buscarLivroHashTable(HashTable* hashTable, char* titulo) {
     int indice = gerarHash(titulo);
+    // printf("GERARHAS: %d\n",indice);
     return hashTable->livros[indice];
-
 }
 
+
 // Menu Configuration function
+Admin admin(){
+
+    int code;
+    char password[20];
+    Admin adm;
+    // Admin*adm = (Admin*)malloc(sizeof(Admin));
+
+    printf("CRIANDO CONTA DE ADMINISTRADOR\n");
+
+    printf("Digite o codigo: ");
+    scanf("%d",&code);
+    printf("Digite a senha: ");
+    scanf("%s",password);
+
+    strcpy(adm.password,password);
+    adm.code = code;
+    return adm;
+}
+int checkAdm(Admin adm){
+    int code;
+    char password[9];
+    printf("Fazer Login\n");
+
+    printf("Insere code: ");
+    scanf("%d",&code);
+    printf("Insere Senha: ");
+    scanf("%s",password);
+
+    if(adm.code == code && strstr(adm.password,password) !=          NULL) {
+        return 1;
+    }else{
+        return 0;
+    }
+};
 Users* criarAcount(Users*users) {
     int code;
     char password[20];
@@ -148,7 +187,6 @@ Users* criarAcount(Users*users) {
     strcpy(newUser->password,password);
     newUser->userCode = code;
     newUser->next = NULL;
-
 
     if(userList == NULL) {
             userList->next = newUser;
@@ -177,7 +215,6 @@ Users* criarAcount(Users*users) {
 };
 void updatePassword(Users*user) {
 
-
     int code;
     char password[20];
     Users*userList = user;
@@ -189,27 +226,6 @@ void updatePassword(Users*user) {
     scanf("%d",&code);
     printf("Digite a senha: ");
     scanf("%s",password);
-
-/*
-    if(userList == NULL) {
-           printf("Não existe usuario!\n");
-    }else{
-        while(userList->next != NULL){
-            if(strstr(userList->password,password ) != NULL && userList->userCode == code) {
-                break;
-            }
-            userList = userList->next;
-        }
-        if(userList->next == NULL) {
-            printf("Não existe este usuario!");
-        }else{
-            printf("Insere a nova senha");
-            scanf("%s",password);
-            strcpy(userList->password,password);
-            printf("Senha actualizada");
-        }
-    printf("CONTA CRIADA COM SUCESSO");
-    }*/
 while(userList != NULL){
 
             if(strstr(userList->password,password ) != NULL && userList->userCode == code) {
@@ -223,14 +239,6 @@ while(userList != NULL){
             }
             userList = userList->next;
         }
-        // if(userList->next == NULL) {
-        //     printf("Não existe este usuario!\n");
-        // }else{
-        //     printf("Insere a nova senha");
-        //     scanf("%s",password);
-        //     strcpy(userList->password,password);
-        //     printf("Senha actualizada");
-        // }
 
     }
 void loadFiles(){
@@ -256,40 +264,75 @@ void insertionBook(BST* bst,HashTable* hashTable) {
 
 
      for(int index = 0; index < quantityOfInsertionBook;index++) {
-        fflush(stdin);
 
-             printf("Disponibilidade: ");
-             scanf("%d",&disponibility);
-        fflush(stdin);
-
+             printf("Inserção - %d\n",index);
              printf("Insere titulo: ");
              scanf("%s",title);
              printf("Insere Autor: ");
              scanf("%s",aut);
+        fflush(stdin);
+
+             printf("Disponibilidade: ");
+             scanf("%d",&disponibility);
+
             strcpy(livro[index].titulo ,title);
             strcpy(livro[index].autor ,aut);
              livro[index].disponivel = disponibility;
 
      }
+
 int sentinela=0;
   for(int index = 0; index < quantityOfInsertionBook; index++) {
 
         for(int i=0; i < index; i++ ){
                 if(buscarLivroHashTable(hashTable,livro[index].titulo) != NULL){
                     sentinela == 1;
-                    printf("Não encontrado: %s\n", livro[index].titulo);
-                }
+                    }
         }
         if(sentinela == 0 ){
                 inserirLivro(bst, livro[index]);
                 inserirLivroHashTable(hashTable, buscarLivro(bst, livro[index].titulo));
-                printf("\nInserido");
+                printf("\nINSERÇÃO COMPLETA");
         }
                 sentinela = 0;
 }
 
 };
-void update(){
+void update(HashTable*hashTable){
+    int disponibility;
+       char title[20],aut[20];
+        printf("ACTUALIZAÇÃO DE DADOS DE LIVRO\n");
+        printf("Insere titulo: ");
+        scanf("%s",title);
+        int index = gerarHash(title);
+        // Livro*book = buscarLivroHashTable(hashTable,title);
+        if(index != -1){
+            printf("Titulo: %s\n", hashTable->livros[index]->titulo);
+            printf("Autor: %s\n", hashTable->livros[index]->autor);
+            printf("Disponibilidade: %d\n", hashTable->livros[index]->disponivel);
+            printf("------------------\n");
+
+            printf("Insere novos dados\n");
+             printf("Insere titulo: ");
+            scanf("%s",title);
+            printf("Insere Autor: ");
+             scanf("%s",aut);
+        fflush(stdin);
+             printf("Disponibilidade: ");
+             scanf("%d",&disponibility);
+
+            strcpy(hashTable->livros[index]->titulo,title);
+            strcpy(hashTable->livros[index]->autor,aut);
+            hashTable->livros[index]->disponivel = disponibility;
+
+            printf("\nACTUALIZAÇÃO COMPLETA\n");
+
+        }else{
+            printf("Livro não encontrado");
+        }
+
+
+
 
 };
 void searchBook(HashTable* hashTable){
@@ -307,96 +350,75 @@ void searchBook(HashTable* hashTable){
     }
 };
 void delete(BST* bst,HashTable* hashTable){
+system("clear");
 
     HashTable*hash = hashTable;
     HashTable*newhash = (HashTable*)malloc(sizeof(HashTable));
     Livro*livro ;
     char title[20];
 
-    printf("ELIMINANDO LIVRO\n ");
+    printf("ELIMINAR LIVRO\n");
 
-    printf("Insere o nome do livro: ");
+    printf("Nome do livro: ");
     scanf("%s",title);
+    int index = gerarHash(title);
 
     livro = buscarLivroHashTable(hash,title);
-    if(livro != NULL){
-        int index = gerarHash(title);
+    if(index > -1){
 
-        if(index != -1){
             printf("viss: %s\nindex:  %d\nleng: %d",hash->livros[index]->titulo,index,hash->tamanho);
 
-            livro = hash->livros[index];
-            hash->livros[index]  =  hash->livros[index+1];
+            hashTable->livros[index] = NULL;
 
-                // if(index == hash->livros[index] ){
-                //             hash->livros[index] =  NULL;
-                // }else{
-                //     if(index < hash->tamanho){
-                //        livro = hash->livros[index];
-                //         hash->livros[index]  =  hash->livros[index+1];
-                //     }else{
-                //     printf("Não deletado\n");
-                //     return;
-                //     }
-                // }
-            bst->root = deleteNode(bst->root, title);
+            printf("viss: %s\nindex:  %d\nleng: %d",hash->livros[index]->titulo,index,hash->tamanho);
 
-                    printf("Livro removido com sucesso.\n");
-            }
+            printf("Livro removido com sucesso.\n");
+
     }else{
                printf("Livro não removido com sucesso.\n");
     }
 }
 void showAll(HashTable* hashTable){
+
   printf("MOSTRANDO TODOS OS LIVROS\n");
-for(int i = 0; i < hashTable->tamanho; i++) {
-        if(hashTable->livros[i] != NULL) {
-            imprimirLivro(hashTable->livros[i]);
+
+      if(hashTable == NULL || hashTable->tamanho == 0){
+        printf("The Hash Table is empty!\n");
+        return;
+    }
+
+    printf("List of all books:\n");
+
+    // Iterate through the array in hashTable
+    for(int i = 0; i < MAX_LIVROS; i++) {
+        Livro* book = hashTable->livros[i];
+
+        // Ensure that the current book is not NULL
+        if(book != NULL) {
+            printf("Titulo: %s\n", book->titulo);
+            printf("Autor: %s\n", book->autor);
+            printf("Disponibilidade: %d\n", book->disponivel);
+            printf("------------------\n");
         }
     }
-    // HashTable* hash = hashTable;
-    // printf("MOSTRANDO TODOS OS LIVROS\n");
-    //
-    //  Livro*book = buscarLivroHashTable(hashTable,hashTable->livros[1]->titulo);
-    // // Livro*book = hashTable->livros[1]->titulo;
-    // if(book != NULL){
-    //     imprimirLivro(book);
-    // }else{
-    //     printf("NOT FOUND");
-    // }
-    // // imprimirLivro(hash->livros[2]->titulo);
-    // for(int i=0; i< 3; i++) {
-    //    // imprimirLivro(hash->livros[i]);
-    //     printf("\n");
-    //
-    // }
 }
 //******************************************************
 void showIndisponibleBook(HashTable*hashTable) {
-printf("LIVROS DISPONÍVEIS\n");
 
-    int disponivelCount = 0;
-    for (int i = 0; i < hashTable->tamanho; i++) {
+    printf("LIVROS INDISPONÍVEIS\n");
 
-        // BSTNode*bst  =  hashTable->livros;
-        Livro* livro =(Livro*)malloc(sizeof(Livro));
-       livro =  hashTable->livros[i];
-        printf("DEBUGANDO %d\n",hashTable->livros[i]->disponivel);
 
-        if (livro != NULL ) {
-            imprimirLivro(livro);
-            disponivelCount++;
-        }
-
+    for (int i = 0; i < MAX_LIVROS; i++) {
+            Livro*book = hashTable->livros[i];
+            if(book != NULL){
+                if(book->disponivel < 1){
+                     printf("Titulo: %s\n", book->titulo);
+                     printf("Autor: %s\n", book->autor);
+                    printf("------------------\n");
+                }
+            }
     }
 
-    if (disponivelCount == 0) {
-        printf("Não há livros disponíveis no momento.\n");
-    } else if (disponivelCount == 1) {
-        printf("Há 1 livro disponível no momento.\n");
-    } else {
-        printf("Há  livros disponíveis no momento.\n");
-    }
 
 
 }
@@ -411,14 +433,14 @@ int searchAutor(HashTable*hashTable,char*autor){
                         if(strstr(hash->livros[i]->autor,autor) != NULL) {
                             return 1;
                         }
-
             i++;
         }
         return 0;
     }
 
 // Menu login
-void requestBook(HashTable*hash){//************
+
+void requestBook(HashTable*hash){
     char title[20];
     printf("SOLICITAÇÃO DE LIVRO\n");
 
@@ -427,45 +449,42 @@ void requestBook(HashTable*hash){//************
 
     int index = gerarHash(title);
 
-    if( hash->livros[index] !=NULL){
-        printf("Pedir livro before: \n%d",hash->livros[index]->disponivel);
-
-        hash->livros[index]->disponivel -= 1;
-
-        printf("Pedir livro after: %d\n",hash->livros[index]->disponivel);
-
+    if( index > -1){
+        if(hash->livros[index]->disponivel > 0){
+            hash->livros[index]->disponivel -= 1;
+        printf("SOLICITAÇÃO FEITA\n");
+            return;
+        }
     }else{
-        printf("ERROR\n");
+        printf("NÃO SOLICITADO\n");
     }
 
 };
-void returnBook(HashTable*hash){//***********************
-char title[20];
-    printf("DEVOLUÇÃO DE LIVRO\n");
+void returnBook(HashTable*hash){
+ char title[20];
+    printf("SOLICITAÇÃO DE LIVRO\n");
 
     printf("Titule: ");
     scanf("%s",title);
 
     int index = gerarHash(title);
 
-    if( hash->livros[index] !=NULL){
-        printf("Devolver livro before: \n%d",hash->livros[index]->disponivel);
-
-        hash->livros[index]->disponivel += 1;
-
-        printf("Devolver livro after: %d\n",hash->livros[index]->disponivel);
+    if( index > -1){
+            hash->livros[index]->disponivel += 1;
+            printf("DEVOLUÇÃO FEITA\n");
+            return;
 
     }else{
-        printf("Não encontrado\n");
+        printf(" DEVOLUÇÃO NÃO ACEITE\n");
     }
 };
+
 int checkLogin(Users*users) {
     Users* userList = users;
     char password[9];
     int code;
 
     printf("Fazer Login\n");
-
     printf("Insere code: ");
     scanf("%d",&code);
     printf("Insere Senha: ");
@@ -481,48 +500,7 @@ int checkLogin(Users*users) {
             return 0;
 }
 
-BSTNode* deleteNode(BSTNode* root, char* title) {
-    if (root == NULL) {
-        return root;
-    }
 
-    if (strcmp(title, root->livro.titulo) < 0) {
-        root->esq = deleteNode(root->esq, title);
-    } else if (strcmp(title, root->livro.titulo) > 0) {
-        root->dir = deleteNode(root->dir, title);
-    } else {
-
-        // Case 1: Node has no children or only one child
-        if (root->esq == NULL) {
-            BSTNode* temp = root->dir;
-            free(root);
-            return temp;
-        } else if (root->dir == NULL) {
-            BSTNode* temp = root->esq;
-            free(root);
-            return temp;
-        }
-
-        // Case 2: Node has two children
-        BSTNode* temp = findMinimumNode(root->dir);
-        root->livro = temp->livro;
-        root->dir = deleteNode(root->dir, temp->livro.titulo);
-    }
-
-    return root;
-}
-
-BSTNode* findMinimumNode(BSTNode* root) {
-    if (root == NULL) {
-        return NULL;
-    }
-
-    while (root->esq != NULL) {
-        root = root->esq;
-    }
-
-    return root;
-}
 
 
 
