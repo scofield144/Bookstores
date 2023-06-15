@@ -22,7 +22,6 @@ int gerarHash(char* titulo);
 HashTable* criarHashTable();
 void inserirLivroHashTable(HashTable* hashTable, Livro* livro);
 Livro* buscarLivroHashTable(HashTable* hashTable, char* titulo);
-void insertion(BST* bst,HashTable* hashTable );
 
 
 
@@ -35,19 +34,19 @@ void insertion(BST* bst,HashTable* hashTable );
 
 // Show menu of option
 
-void menuStart();
+void menuStart(BST*bst,HashTable*hash,Users*users,Livro*livro);
 void menuConfiguration(Users*users) ;
 int search(HashTable*hashTable);
 void menuManagement(BST* bst,HashTable* hashTable );
-void login(HashTable* hashTable) ;
+void login(Users*users,HashTable* hashTable) ;
 
 // Menu Start function
 void configuration();
 void management();
-void login(HashTable* hashTable);
+// void login(HashTable* hashTable);
 
 // Menu Configuration function
-void criarAcount(Users*users);
+Users*criarAcount(Users*users);
 void updatePassword(Users*userList);
 void loadFiles();
 
@@ -58,13 +57,14 @@ void update();
 void searchBook(HashTable* hashTable);
 void delete(BST* bst,HashTable* hashTable);
 void showAll(HashTable* hashTable);
-void showIndisponibleBook();
+void showIndisponibleBook(HashTable*hashTable);
 
  int searchAutor(HashTable*hashTable,char*autor);
 
 // Menu login
-void requestBook();
-void returnBook();
+ int checkLogin(Users*users);
+void requestBook(HashTable*hash);
+void returnBook(HashTable*hash);
 
 
 
