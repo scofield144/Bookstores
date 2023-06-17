@@ -13,12 +13,14 @@ struct livro {
 };
 
 struct users {
-    int userCode;
+    int id;
+    char userName[20];
     char password[20];
     Users* next;
   //  char name[20];
 };
 struct adm {
+    char*userName[9];
     int code;
     char password[9];
 };
@@ -169,66 +171,44 @@ int checkAdm(Admin adm){
         return 0;
     }
 };
-Users* criarAcount(Users*users) {
-    int code;
-    char password[20];
-    Users*userList = users;
+Users*criarAcount(Users*userList,char*userName,char*password,int id){
+
 
     Users*newUser = (Users*)malloc(sizeof(Users));
 
-    printf("CRIANDO CONTA\n");
-
-    printf("Digite o codigo: ");
-    scanf("%d",&code);
-    printf("Digite a senha: ");
-    scanf("%s",password);
-
 
     strcpy(newUser->password,password);
-    newUser->userCode = code;
+    newUser->id = id;
     newUser->next = NULL;
 
     if(userList == NULL) {
-            userList->next = newUser;
+            userList = newUser;
     }else{
 
-        while(userList != NULL){
-            if(strstr(userList->password,newUser->password ) != NULL && userList->userCode == newUser->userCode) {
+        while(userList->next != NULL){
+            if(strstr(userList->password,newUser->password ) != NULL && userList->id == newUser->id) {
                 break;
             }
             userList = userList->next;
         }
-        if(userList == NULL) {
-            userList = newUser;
+        if(userList->next == NULL) {
+            userList->next = newUser;
+            return userList;
         }else{
-            printf("Dados inseridos já existem\n");
-            criarAcount(users);
+            return NULL;
         }
     }
-     users ->next = userList;
-        puts(users->next->password);
-        printf("\nCode: %d",users->next->userCode);
-        userList->next = NULL;
 
-    printf("\nCONTA CRIADA COM SUCESSO\n");
-    return users;
+
+    // printf("\nCONTA CRIADA COM SUCESSO\n");
+    return userList;
 };
 void updatePassword(Users*user) {
 
-    int code;
-    char password[20];
-    Users*userList = user;
 
-    printf("\nALTERANDO A SENHA DO UTILIZADOR\n");
-
-    printf("DEBUGANDO: %s ",userList->password);
-    printf("Digite o codigo: ");
-    scanf("%d",&code);
-    printf("Digite a senha: ");
-    scanf("%s",password);
 while(userList != NULL){
 
-            if(strstr(userList->password,password ) != NULL && userList->userCode == code) {
+            if(strstr(userList->password,password ) != NULL && userList->id == code) {
                         printf("\nbefore: %s ",userList->password);
                  printf("Insere a nova senha");
             scanf("%s",password);
@@ -244,150 +224,84 @@ while(userList != NULL){
 void loadFiles(){
 
 };
-
+int getID(Users* user) {
+    Users*aux = user;
+    if(aux == NULL) return 1;
+    while(aux->next != NULL) {
+        aux = aux->next;
+    }
+    return aux->id+1;   // return the next id
+}
 
 // Menu management function
-void insertionBook(BST* bst,HashTable* hashTable) {
+int insertionBook(BST* bst,HashTable* hashTable, char*title,char*autor,int disponibility) {
 
+     Livro books;
 
-    BST*bookList = bst;
-
-     int quantityOfInsertionBook;
-     char title[20],aut[20];
-     int disponibility = 0;
-
-
-     printf("Quantos livros deseja inserir: ");
-     scanf("%d",&quantityOfInsertionBook);
-
-     Livro livro[quantityOfInsertionBook];
-
-
-     for(int index = 0; index < quantityOfInsertionBook;index++) {
-
-             printf("Inserção - %d\n",index);
-             printf("Insere titulo: ");
-             scanf("%s",title);
-             printf("Insere Autor: ");
-             scanf("%s",aut);
-        fflush(stdin);
-
-             printf("Disponibilidade: ");
-             scanf("%d",&disponibility);
-
-            strcpy(livro[index].titulo ,title);
-            strcpy(livro[index].autor ,aut);
-             livro[index].disponivel = disponibility;
-
-     }
+            strcpy(books.titulo ,title);
+            strcpy(books.autor ,autor);
+             books.disponivel = disponibility;
 
 int sentinela=0;
-  for(int index = 0; index < quantityOfInsertionBook; index++) {
 
-        for(int i=0; i < index; i++ ){
-                if(buscarLivroHashTable(hashTable,livro[index].titulo) != NULL){
-                    sentinela == 1;
+        for(int i=0; i < MAX_LIVROS; i++ ){
+                if(buscarLivroHashTable(hashTable,books.titulo) != NULL &&  strstr(hashTable->livros[i]->autor,books.autor)){
+                    sentinela  =  1;
                     }
         }
         if(sentinela == 0 ){
-                inserirLivro(bst, livro[index]);
-                inserirLivroHashTable(hashTable, buscarLivro(bst, livro[index].titulo));
-                printf("\nINSERÇÃO COMPLETA");
+                inserirLivro(bst, books);
+                inserirLivroHashTable(hashTable, buscarLivro(bst, books.titulo));
+                return 1;
         }
                 sentinela = 0;
-}
 
+return -1;
 };
-void update(HashTable*hashTable){
-    int disponibility;
-       char title[20],aut[20];
-        printf("ACTUALIZAÇÃO DE DADOS DE LIVRO\n");
-        printf("Insere titulo: ");
-        scanf("%s",title);
+int update(HashTable*hashTable,char*title,char*autor,int disponibility){
+;
         int index = gerarHash(title);
-        // Livro*book = buscarLivroHashTable(hashTable,title);
         if(index != -1){
-            printf("Titulo: %s\n", hashTable->livros[index]->titulo);
-            printf("Autor: %s\n", hashTable->livros[index]->autor);
-            printf("Disponibilidade: %d\n", hashTable->livros[index]->disponivel);
-            printf("------------------\n");
-
-            printf("Insere novos dados\n");
-             printf("Insere titulo: ");
-            scanf("%s",title);
-            printf("Insere Autor: ");
-             scanf("%s",aut);
-        fflush(stdin);
-             printf("Disponibilidade: ");
-             scanf("%d",&disponibility);
-
             strcpy(hashTable->livros[index]->titulo,title);
-            strcpy(hashTable->livros[index]->autor,aut);
+            strcpy(hashTable->livros[index]->autor,autor);
             hashTable->livros[index]->disponivel = disponibility;
 
-            printf("\nACTUALIZAÇÃO COMPLETA\n");
+            return 1;
 
         }else{
-            printf("Livro não encontrado");
+            return -1;
         }
 
 
 
 
 };
-void searchBook(HashTable* hashTable){
-    char title[20];
+int searchBook(HashTable* hashTable,char*title,char*autor){
 
-    printf("PESQUISANDO LIVRO\n");
-    printf("Digite o titulo: ");
-    scanf("%s",title);
 
     Livro*book = buscarLivroHashTable(hashTable,title);
-    if(book != NULL){
+    if(book != NULL && strstr(book->autor,autor) != NULL){
         imprimirLivro(book);
+        return 1;
     }else{
-        printf("Livro não encontrado\n");
+            return -1;
+
     }
 };
-void delete(BST* bst,HashTable* hashTable){
+int delete(HashTable* hashTable,char*title){
 system("clear");
 
-    HashTable*hash = hashTable;
-    HashTable*newhash = (HashTable*)malloc(sizeof(HashTable));
-    Livro*livro ;
-    char title[20];
 
-    printf("ELIMINAR LIVRO\n");
-
-    printf("Nome do livro: ");
-    scanf("%s",title);
     int index = gerarHash(title);
 
-    livro = buscarLivroHashTable(hash,title);
     if(index > -1){
-
-            printf("viss: %s\nindex:  %d\nleng: %d",hash->livros[index]->titulo,index,hash->tamanho);
-
             hashTable->livros[index] = NULL;
-
-            printf("viss: %s\nindex:  %d\nleng: %d",hash->livros[index]->titulo,index,hash->tamanho);
-
-            printf("Livro removido com sucesso.\n");
-
+            return 1;
     }else{
-               printf("Livro não removido com sucesso.\n");
+        return -1;
     }
 }
 void showAll(HashTable* hashTable){
-
-  printf("MOSTRANDO TODOS OS LIVROS\n");
-
-      if(hashTable == NULL || hashTable->tamanho == 0){
-        printf("The Hash Table is empty!\n");
-        return;
-    }
-
-    printf("List of all books:\n");
 
     // Iterate through the array in hashTable
     for(int i = 0; i < MAX_LIVROS; i++) {
@@ -405,9 +319,6 @@ void showAll(HashTable* hashTable){
 //******************************************************
 void showIndisponibleBook(HashTable*hashTable) {
 
-    printf("LIVROS INDISPONÍVEIS\n");
-
-
     for (int i = 0; i < MAX_LIVROS; i++) {
             Livro*book = hashTable->livros[i];
             if(book != NULL){
@@ -418,9 +329,6 @@ void showIndisponibleBook(HashTable*hashTable) {
                 }
             }
     }
-
-
-
 }
 
 
@@ -440,65 +348,47 @@ int searchAutor(HashTable*hashTable,char*autor){
 
 // Menu login
 
-void requestBook(HashTable*hash){
-    char title[20];
-    printf("SOLICITAÇÃO DE LIVRO\n");
+int requestBook(HashTable*hash,char*title){
 
-    printf("Titule: ");
-    scanf("%s",title);
 
     int index = gerarHash(title);
 
     if( index > -1){
         if(hash->livros[index]->disponivel > 0){
             hash->livros[index]->disponivel -= 1;
-        printf("SOLICITAÇÃO FEITA\n");
-            return;
+            return 1;
         }
-    }else{
-        printf("NÃO SOLICITADO\n");
     }
+        return -1;
 
 };
-void returnBook(HashTable*hash){
- char title[20];
-    printf("SOLICITAÇÃO DE LIVRO\n");
-
-    printf("Titule: ");
-    scanf("%s",title);
+int returnBook(HashTable*hash,char*title){
 
     int index = gerarHash(title);
 
     if( index > -1){
             hash->livros[index]->disponivel += 1;
-            printf("DEVOLUÇÃO FEITA\n");
-            return;
+            return 1;
 
     }else{
-        printf(" DEVOLUÇÃO NÃO ACEITE\n");
+        return -1;
     }
 };
 
-int checkLogin(Users*users) {
+int checkLogin(Users*users,char*password,char*name) {
     Users* userList = users;
-    char password[9];
-    int code;
-
-    printf("Fazer Login\n");
-    printf("Insere code: ");
-    scanf("%d",&code);
-    printf("Insere Senha: ");
-    scanf("%s",password);
 
         while(userList != NULL){
             if(strstr(userList->password,password ) != NULL
-                && userList->userCode == code) {
+                && strstr(userList->userName,name )) {
                 return 1;
             }
             userList = userList->next;
     }
             return 0;
 }
+
+voi showEntirative() {}
 
 
 

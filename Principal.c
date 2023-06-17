@@ -14,6 +14,9 @@ BST* bst = criarBST();
     HashTable* hashTable = criarHashTable();
     Users*users = (Users*)malloc(sizeof(Users));
     Livro livro [MAX_LIVROS];
+char password[20],userName[20];
+    int code;
+
 
     strcpy(livro[0].titulo ,"Livro1");
             strcpy(livro[0].autor ,"Autor 1");
@@ -28,7 +31,7 @@ BST* bst = criarBST();
              livro[2].disponivel = 4;
 
     strcpy(users->password,"abc1");
-    users->userCode = 12;
+    users->id = 12;
      users->next = NULL;
 
 
@@ -59,14 +62,27 @@ BST* bst = criarBST();
     if(option > 0 && option < 4) {
         switch(option) {
             case 1 :
-                   if( checkAdm(adm) == 1){
-                        menuStart(bst,hashTable,users,livro);
-                }else{
-                    printf("ERROR NO ADM");
-                }
+
+                        printf("Fazer Login\n");
+                        printf("Insere code: ");
+                        scanf("%d",&code);
+                        printf("Insere Senha: ");
+                        scanf("%s",password);
+                                        if( checkAdm(adm) == 1){
+                                                menuStart(bst,hashTable,users,livro);
+                                        }else{
+                                        printf("ERROR NO ADM");
+                        }
                     break;
             case 2 :
-                    if(checkLogin(users) == 1){
+
+                    printf("FAZENDO LOGIN\n");
+                    printf("Nome do utilzador: ");
+                    scanf("%s",userName);
+                    printf("Senha do utilizador: ");
+                    scanf("%s",password);
+
+                    if(checkLogin(users,password,userName) == 1){
                             menuUser(users,hashTable);
                     }else {
                     printf("ERROR NO SOCIO");
@@ -117,6 +133,11 @@ void menuStart(BST*bst,HashTable*hashTable,Users*users,Livro*book){
 }
 void menuConfiguration(Users*users) {
     int option;
+        int idUser;
+            char userName[20];
+    char password[20];
+    Users*userList = users;
+
     printf("CONFIGURAÇÕES DA LIVRARIA\n");
     printf(" Escolha uma das opções:\n");
     printf("1 - Criar conta\n");
@@ -128,9 +149,30 @@ void menuConfiguration(Users*users) {
 
     if(option > 0 && option < 5) {
         switch(option) {
-            case 1 : users = criarAcount(users);
+            case 1 :
+                    printf("CRIANDO CONTA\n");
+
+                       printf("Nome de usuario: ");
+                        scanf("%s",userName);
+                        printf("Senha: ");
+                        scanf("%s",password);
+                        idUser = getID(users);
+
+
+                    users = criarAcount(users,userName,password,idUser);
+                    if(users != NULL) {
+                         printf("CONTA CRIADDA\n");
+
+                }else{
+                         printf("Dados inseridos já existem\n");
+                }
                     break;
-            case 2 : updatePassword(users);
+            case 2 :
+
+    printf("\nALTERANDO A SENHA DO UTILIZADOR\n");
+
+
+                    updatePassword(users);
                     break;
             case 3 : loadFiles();
                     break;
@@ -144,7 +186,11 @@ void menuConfiguration(Users*users) {
     }
 }
 void menuManagement(BST* bst,HashTable* hashTable ) {
-    int option;
+    int option,disponibility;
+    char title[20],autor[20];
+    int index = 0;
+    Livro books[MAX_LIVROS];
+
     printf("GESTÃO DA LIVRARIA\n");
     printf(" Escolha uma das opções:\n");
     printf("1 - Inserir novo livro\n");
@@ -156,22 +202,107 @@ void menuManagement(BST* bst,HashTable* hashTable ) {
 
     printf("7 - Sair\n:: ");
     scanf("%d",&option);
+                     int quantityOfBooks;
 
 
 
     if(option > 0 && option < 8) {
         switch(option) {
-            case 1 : insertionBook(bst,hashTable);
+            case 1 :
+                                printf("Quantos livros deseja inserir: ");
+                                scanf("%d",&quantityOfBooks);
+
+                        for(; index < quantityOfBooks;index++) {
+
+                                        printf("Inserindo o %dº numero\n",index + 1);
+                                        printf("Insere titulo: ");
+                                        scanf("%s",title);
+                                        printf("Insere Autor: ");
+                                        scanf("%s",autor);
+                                        fflush(stdin);
+
+                                        printf("Disponibilidade: ");
+                                        scanf("%d",&disponibility);
+
+                                        if(insertionBook(bst,hashTable,title,autor,disponibility) == 1) {
+                                                printf("INSERÇÃO COMPLETA\n");
+
+                                        }else{
+                                                        printf("INSERÇÃO NÃO FEITA\n");
+                                        }
+                }
+
                     break;
-            case 2 : update(hashTable);
+            case 2 :
+                    printf(" ACTUALIZAÇÃO DE DADOS DE LIVRO\n");
+
+                    printf("Insere o titulo: ");
+                    scanf("%s",title);
+                    printf("Insere nome do autor: ");
+                    scanf("%s",autor);
+
+                    if(searchBook(hashTable,title,autor) == 1){
+                                printf("        Insere novos dados\n");
+
+                                printf("Insere titulo: ");
+                                scanf("%s",title);
+                                printf("Insere Autor: ");
+                                scanf("%s",autor);
+                        fflush(stdin);
+                                printf("Disponibilidade: ");
+                                scanf("%d",&disponibility);
+
+                                if(update(hashTable,title,autor,disponibility)==1){
+                                                    printf("\n ACTUALIZAÇÃO COMPLETA \n");
+
+                                }else{
+                                                    printf(" NÃO ACTUALIZADO\n");
+                                }
+                }else
+                            printf("NÃO ENCONTRADO\n");
                     break;
-            case 3 : searchBook(hashTable);
+            case 3 :
+                    printf("PESQUISAR LIVRO\n");
+                    printf("Insere o titulo: ");
+                    scanf("%s",title);
+                    printf("Insere nome do autor: ");
+                    scanf("%s",autor);
+
+                    if(searchBook(hashTable,title,autor) == -1){
+                            printf("NÃO ENCONTRADO\n");
+                }
+
                     break;
-            case 4 : delete(bst,hashTable);
+            case 4 :
+                printf("        ELIMINAR LIVRO\n");
+
+                    printf("Insere o titulo: ");
+                    scanf("%s",title);
+                    printf("Insere nome do autor: ");
+                    scanf("%s",autor);
+
+                    if(searchBook(hashTable,title,autor) == -1){
+                           if(delete(hashTable,title) == 1) {
+                           printf("REMOVIDO\n");
+                        }else{
+                                          printf("NÃO REMOVIDO\n");
+                        }
+                }else
+                            printf("NÃO ENCONTRADO\n");
                     break;
-            case 5 : showAll(hashTable);
+            case 5 :
+                      printf("MOSTRANDO TODOS OS LIVROS\n");
+
+                        if(hashTable == NULL || hashTable->tamanho == 0){
+                        printf("Livraria fazia!\n");
+                        }else{
+                                showAll(hashTable);
+                        }
                     break;
-            case 6 : showIndisponibleBook(hashTable);
+            case 6 :
+                printf("LIVROS INDISPONÍVEIS\n");
+
+                 showIndisponibleBook(hashTable);
                     break;
             case 7 :
                     break;
@@ -187,6 +318,9 @@ void menuManagement(BST* bst,HashTable* hashTable ) {
 
 void menuUser(Users*user,HashTable* hashTable) {
     int option;
+    char title[20];
+    char autor[20];
+
     printf("Entrar\n");
 
     printf(" Escolha uma das opções:\n");
@@ -198,11 +332,40 @@ void menuUser(Users*user,HashTable* hashTable) {
 
     if(option > 0 && option < 5) {
         switch(option) {
-            case 1 : searchBook(hashTable);
+            case 1 :
+                        printf("        PESQUISANDO LIVRO\n");
+                        printf("Digite o titulo: ");
+                        scanf("%s",title);
+
+                        if(searchBook(hashTable,title,autor)  == -1){
+                                printf("Livro não encontrado\n");
+                        }
+
+
                     break;
-            case 2 : requestBook(hashTable);
+            case 2 :
+                        printf("        SOLICITAÇÃO DE LIVRO\n");
+
+                        printf("Titule: ");
+                        scanf("%s",title);
+                        if(requestBook(hashTable,title) == 1){
+                                printf("SOLICITAÇÃO FEITA\n");
+
+                        }else
+                                printf("SOLICITAÇÃO NÃO FEITA\n");
+
                     break;
-            case 3 : returnBook(hashTable);
+            case 3 :
+                    printf("        DEVOLUÇÃO DE LIVRO\n");
+
+                        printf("Titule: ");
+                        scanf("%s",title);
+                        if(returnBook(hashTable,title) == 1){
+                                printf("DEVOLUÇÃO FEITA\n");
+
+                        }else
+                                printf("DEVOLUÇÃO NÃO FEITA\n");
+
                     break;
             case 4:
                     break;
@@ -214,3 +377,30 @@ void menuUser(Users*user,HashTable* hashTable) {
         printf("Inserção invalida\n");
     }
 }
+
+
+
+/* ***************************************************************
+int insertionBook(BST* bst,HashTable* hashTable,Livro*book,int quantity) {
+int sentinela=0;
+  for(int index = 0; index < quantity; index++) {
+
+        for(int i=0; i < index; i++ ){// checking each book to know  if book already exist
+
+            Livro*auxBook = buscarLivroHashTable(hashTable,book[index].titulo);
+                    printf("DEBUUUUU\n");
+                if( auxBook == NULL && strstr(auxBook->autor,book->autor) == NULL){
+                    sentinela = 1;
+                    }
+
+        if(sentinela == 0 ){// book doesn't exist in the store
+                inserirLivro(bst, book[index]);
+                inserirLivroHashTable(hashTable, buscarLivro(bst, book[index].titulo));
+                return 1;
+        }
+                sentinela = 0;
+}
+}
+return -1;
+
+}*/
