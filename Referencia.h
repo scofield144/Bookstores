@@ -26,7 +26,7 @@ Livro* buscarLivroHashTable(HashTable* hashTable, char* titulo);
 
 // Show menu of option
 Admin  admin();
-int checkAdm(Admin adm);
+int checkAdm(Admin adm,char*userPass,char*userName);
 void menuStart(BST*bst,HashTable*hash,Users*users,Livro*livro);
 void menuConfiguration(Users*users) ;
 int search(HashTable*hashTable);
@@ -37,9 +37,10 @@ void menuUser(Users*users,HashTable* hashTable) ;
 void configuration();
 void management();
 // void login(HashTable* hashTable);
+
 // Menu Configuration function
-Users*criarAcount(Users*users,char*userName,char*password,int id);
-void updatePassword(Users*userList);
+Users*criarAcount(Users*userList,char*userName,char*password);
+int updatePassword(Users*user,char*newPassworld,char*pass,char*name) ;
 void loadFiles();
 int getID(Users*user);
 
@@ -54,7 +55,7 @@ void showIndisponibleBook(HashTable*hashTable);
  int searchAutor(HashTable*hashTable,char*autor);
 
 // Menu login
-int checkLogin(Users*users,char*password,char*name);
+int checkUser(Users*users,char*password,char*name);
 int requestBook(HashTable*hash,char*title);
 int returnBook(HashTable*hash,char*title);
 

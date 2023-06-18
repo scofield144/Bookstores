@@ -20,9 +20,8 @@ struct users {
   //  char name[20];
 };
 struct adm {
-    char*userName[9];
-    int code;
-    char password[9];
+    char userName[20];
+    char password[20];
 };
 
 struct bstNode {
@@ -131,96 +130,62 @@ void inserirLivroHashTable(HashTable* hashTable, Livro* livro) {
 
 Livro* buscarLivroHashTable(HashTable* hashTable, char* titulo) {
     int indice = gerarHash(titulo);
-    // printf("GERARHAS: %d\n",indice);
+
     return hashTable->livros[indice];
 }
 
-
 // Menu Configuration function
-Admin admin(){
 
-    int code;
-    char password[20];
-    Admin adm;
-    // Admin*adm = (Admin*)malloc(sizeof(Admin));
+int checkAdm(Admin adm,char*pass,char*name){
 
-    printf("CRIANDO CONTA DE ADMINISTRADOR\n");
-
-    printf("Digite o codigo: ");
-    scanf("%d",&code);
-    printf("Digite a senha: ");
-    scanf("%s",password);
-
-    strcpy(adm.password,password);
-    adm.code = code;
-    return adm;
-}
-int checkAdm(Admin adm){
-    int code;
-    char password[9];
-    printf("Fazer Login\n");
-
-    printf("Insere code: ");
-    scanf("%d",&code);
-    printf("Insere Senha: ");
-    scanf("%s",password);
-
-    if(adm.code == code && strstr(adm.password,password) !=          NULL) {
+    if(strstr(adm.userName,name) != NULL && strstr(adm.password,pass) != NULL) {
         return 1;
     }else{
         return 0;
     }
 };
-Users*criarAcount(Users*userList,char*userName,char*password,int id){
-
+Users*criarAcount(Users*userList,char*userName,char*password){
 
     Users*newUser = (Users*)malloc(sizeof(Users));
 
-
     strcpy(newUser->password,password);
-    newUser->id = id;
+    strcpy(newUser->userName,userName);
+
+    newUser->id = 1;
     newUser->next = NULL;
 
     if(userList == NULL) {
             userList = newUser;
     }else{
-
         while(userList->next != NULL){
-            if(strstr(userList->password,newUser->password ) != NULL && userList->id == newUser->id) {
+            if(strstr(userList->password,newUser->password ) != NULL && strstr(userList->userName,newUser->userName) !=NULL) {
                 break;
             }
             userList = userList->next;
+            userList->id +=1;
         }
         if(userList->next == NULL) {
             userList->next = newUser;
-            return userList;
         }else{
             return NULL;
         }
     }
-
-
-    // printf("\nCONTA CRIADA COM SUCESSO\n");
     return userList;
 };
-void updatePassword(Users*user) {
+int updatePassword(Users*user,char*newPassworld,char*pass,char*name) {
 
+    Users*userList = user;
 
-while(userList != NULL){
-
-            if(strstr(userList->password,password ) != NULL && userList->id == code) {
-                        printf("\nbefore: %s ",userList->password);
-                 printf("Insere a nova senha");
-            scanf("%s",password);
-            strcpy(userList->password,password);
-            printf("Senha actualizada");
-            printf("\nbefore: %s ",userList->password);
-                break;
+        while(userList != NULL){
+            if(strstr(userList->password,pass) != NULL
+                && strstr(userList->userName,name)) {
+                strcpy(userList->password,newPassworld);
+                return 1;
             }
             userList = userList->next;
-        }
-
     }
+    return 0;
+}
 void loadFiles(){
 
 };
@@ -258,6 +223,7 @@ int sentinela=0;
 
 return -1;
 };
+
 int update(HashTable*hashTable,char*title,char*autor,int disponibility){
 ;
         int index = gerarHash(title);
@@ -276,6 +242,7 @@ int update(HashTable*hashTable,char*title,char*autor,int disponibility){
 
 
 };
+
 int searchBook(HashTable* hashTable,char*title,char*autor){
 
 
@@ -288,6 +255,7 @@ int searchBook(HashTable* hashTable,char*title,char*autor){
 
     }
 };
+
 int delete(HashTable* hashTable,char*title){
 system("clear");
 
@@ -301,6 +269,7 @@ system("clear");
         return -1;
     }
 }
+
 void showAll(HashTable* hashTable){
 
     // Iterate through the array in hashTable
@@ -311,11 +280,12 @@ void showAll(HashTable* hashTable){
         if(book != NULL) {
             printf("Titulo: %s\n", book->titulo);
             printf("Autor: %s\n", book->autor);
-            printf("Disponibilidade: %d\n", book->disponivel);
+            printf("Quantidade: %d\n", book->disponivel);
             printf("------------------\n");
         }
     }
 }
+
 //******************************************************
 void showIndisponibleBook(HashTable*hashTable) {
 
@@ -323,14 +293,14 @@ void showIndisponibleBook(HashTable*hashTable) {
             Livro*book = hashTable->livros[i];
             if(book != NULL){
                 if(book->disponivel < 1){
-                     printf("Titulo: %s\n", book->titulo);
+                    printf("Titulo: %s\n", book->titulo);
                      printf("Autor: %s\n", book->autor);
+                     printf("Quantidade: %d\n", book->disponivel);
                     printf("------------------\n");
                 }
             }
     }
 }
-
 
 int searchAutor(HashTable*hashTable,char*autor){
         int i = 0;
@@ -350,7 +320,6 @@ int searchAutor(HashTable*hashTable,char*autor){
 
 int requestBook(HashTable*hash,char*title){
 
-
     int index = gerarHash(title);
 
     if( index > -1){
@@ -362,6 +331,7 @@ int requestBook(HashTable*hash,char*title){
         return -1;
 
 };
+
 int returnBook(HashTable*hash,char*title){
 
     int index = gerarHash(title);
@@ -375,7 +345,7 @@ int returnBook(HashTable*hash,char*title){
     }
 };
 
-int checkLogin(Users*users,char*password,char*name) {
+int checkUser(Users*users,char*password,char*name) {
     Users* userList = users;
 
         while(userList != NULL){
@@ -388,7 +358,9 @@ int checkLogin(Users*users,char*password,char*name) {
             return 0;
 }
 
-voi showEntirative() {}
+void showEntirative() {
+
+}
 
 
 

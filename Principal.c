@@ -15,7 +15,6 @@ BST* bst = criarBST();
     Users*users = (Users*)malloc(sizeof(Users));
     Livro livro [MAX_LIVROS];
 char password[20],userName[20];
-    int code;
 
 
     strcpy(livro[0].titulo ,"Livro1");
@@ -31,6 +30,8 @@ char password[20],userName[20];
              livro[2].disponivel = 4;
 
     strcpy(users->password,"abc1");
+        strcpy(users->userName,"ta");
+
     users->id = 12;
      users->next = NULL;
 
@@ -59,19 +60,20 @@ char password[20],userName[20];
 
     scanf("%d",&option);
 
-    if(option > 0 && option < 4) {
+    if(option > 0 && option < 4) {\
         switch(option) {
             case 1 :
 
                         printf("Fazer Login\n");
-                        printf("Insere code: ");
-                        scanf("%d",&code);
-                        printf("Insere Senha: ");
+                        printf("Nome: ");
+                        scanf("%s",userName);
+                        printf("Senha: ");
                         scanf("%s",password);
-                                        if( checkAdm(adm) == 1){
-                                                menuStart(bst,hashTable,users,livro);
-                                        }else{
-                                        printf("ERROR NO ADM");
+
+                          if( checkAdm(adm,password,userName) == 1){
+                                menuStart(bst,hashTable,users,livro);
+                          }else{
+                                  printf("UTILIZADOR OU SENHA INCORRETA\n");
                         }
                     break;
             case 2 :
@@ -82,10 +84,10 @@ char password[20],userName[20];
                     printf("Senha do utilizador: ");
                     scanf("%s",password);
 
-                    if(checkLogin(users,password,userName) == 1){
+                    if(checkUser(users,password,userName) == 1){
                             menuUser(users,hashTable);
                     }else {
-                    printf("ERROR NO SOCIO");
+                                  printf("UTILIZADOR OU SENHA INCORRETA\n");
                     }
                     break;
             case 3: index=1;
@@ -102,6 +104,25 @@ char password[20],userName[20];
     free(hashTable);
     return 0;
 }
+Admin admin(){
+char password[20],userName[20];
+
+    Admin adm;
+    // Admin*adm = (Admin*)malloc(sizeof(Admin));
+
+    printf("CRIANDO CONTA DE ADMINISTRADOR\n");
+
+    printf("Nome: ");
+    scanf("%s",userName);
+    printf("Senha: ");
+    scanf("%s",password);
+
+    strcpy(adm.password,password);
+    strcpy(adm.userName,userName);
+    return adm;
+
+}
+
 void menuStart(BST*bst,HashTable*hashTable,Users*users,Livro*book){
 
     int option = 0;
@@ -135,7 +156,7 @@ void menuConfiguration(Users*users) {
     int option;
         int idUser;
             char userName[20];
-    char password[20];
+    char password[20],newPassword[20];
     Users*userList = users;
 
     printf("CONFIGURAÇÕES DA LIVRARIA\n");
@@ -156,10 +177,8 @@ void menuConfiguration(Users*users) {
                         scanf("%s",userName);
                         printf("Senha: ");
                         scanf("%s",password);
-                        idUser = getID(users);
 
-
-                    users = criarAcount(users,userName,password,idUser);
+                    users = criarAcount(users,userName,password);
                     if(users != NULL) {
                          printf("CONTA CRIADDA\n");
 
@@ -168,11 +187,20 @@ void menuConfiguration(Users*users) {
                 }
                     break;
             case 2 :
+                        printf("\nALTERANDO A SENHA DO UTILIZADOR\n");
 
-    printf("\nALTERANDO A SENHA DO UTILIZADOR\n");
+                        printf("Nome de usuario: ");
+                        scanf("%s",userName);
+                        printf("Senha: ");
+                        scanf("%s",password);
+                        printf("Nova senha: ");
+                        scanf("%s",newPassword);
 
-
-                    updatePassword(users);
+                        if(updatePassword(userList,newPassword,password,userName) == 0 ) {
+                                printf("SENHA ACTUALIZADA COM SUCESSO");
+                        }else{
+                                printf("SENHA NÃO ACTUALIZADA");
+                        }
                     break;
             case 3 : loadFiles();
                     break;
